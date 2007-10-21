@@ -318,6 +318,7 @@ class Graph {
 	{
 		foreach ($this->rows as $i=>$row)
 		{
+			if (DEBUG) print "Writing '$row->name' at [40, ". (20+10*$i) ."] in ". $row->color[0];
 			imagestring($this->img, 2, 40, 20+10*$i, $row->name, $row->color[0]);
 		}
 	}
