@@ -76,7 +76,7 @@ class Graph {
 	
 	// finalizes the image
 	
-	function draw_rows() {
+	function drawRows() {
 		if (DEBUG) print "draw_rows() called";
 		if ($this->rows) {
 			foreach ($this->rows as $row) {
@@ -101,8 +101,9 @@ class Graph {
 		$this->addMeans();
 		$this->addDeviations();
 		$this->addRegressions();
-		$this->draw_rows();
-		$this->scale(); // draws scale
+		$this->drawRows();
+		$this->addScale(); // draws scale
+		$this->addLegend();
 		ob_start();
 		imagepng($this->img);
 		return ob_get_clean();
@@ -280,7 +281,7 @@ class Graph {
 		if ($this->y_notch_type == 'interval') $this->y_notches = $this->max_height / $this->y_notches;
 	}
 	
-	function scale() {
+	function addScale() {
 		global $rehzero;
 		if (DEBUG) print "Drawing both axes.\n";
 		// left vertical axis
@@ -311,6 +312,14 @@ class Graph {
 			if ($this->label_y) $label=sprintf($this->label_y,$label);
 			imagestring($this->img,1,$y_axis-38,$yer+2,$label,$this->labelcolor);
 		}		
+	}
+	
+	function addLegend() 
+	{
+		foreach ($this->rows as $i=>$row)
+		{
+			imagestring($this->img, 40, 20+10*$i, $row->name, $row->color[0]);
+		}
 	}
 }
 ?>
