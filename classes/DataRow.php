@@ -19,8 +19,9 @@ class DataRow {
 	public $mean;
 	public $dev;
 	
-	function DataRow($plotStyle, $dependent=0, $mean=false, $dev=0) {
+	function DataRow($name, $plotStyle, $dependent=0, $mean=false, $dev=0) {
 		$this->plotStyle=$plotStyle;
+		$this->name = $name;
 		$this->dataPoints=array();
 		$this->dependent=$dependent;
 		$this->mean=$mean;
