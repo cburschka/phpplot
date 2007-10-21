@@ -139,6 +139,7 @@ class Graph {
 	}	
 	function addDeviations() {
 		foreach ($this->rows as &$row) {
+			if (!$row->dev) continue;
 			$y = $row->dependent!=1; // only draw horizontal mean if y is a measured value.
 			$x = $row->dependent!=0; // only draw vertical mean if x is a measured value.
 			$ellipsis = $row->dependent==3;
