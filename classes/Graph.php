@@ -88,7 +88,8 @@ class Graph {
 					if (DEBUG) print "!!!". $row->plotStyle->color. "!!!\n";
 					$row->plotStyle->drawDataPoint($this->img,$mapped['x'],$mapped['y']);				
 					if (!empty($point['label'])) {
-						imagestring($this->img, 1, $mapped['x']+5, $mapped['y']+5, $point['label'], $this->labelcolor);
+						$x_offset = max(10, min($mapped['x']+5, $this->width - 3*strlen($point['label'])));
+						imagestring($this->img, 1, $x_offset, $mapped['y']+5, $point['label'], $this->labelcolor);
 					}
 				}			
 			}	
