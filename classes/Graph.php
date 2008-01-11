@@ -80,6 +80,7 @@ class Graph {
     if (DEBUG) print "draw_rows() called";
     if ($this->rows) {
       foreach ($this->rows as $row) {
+        $labelcolor = $row->labelcolor ? $row->labelcolor : $this->labelcolor;
         if (DEBUG) print "NEW ROW!";
         foreach ($row->dataPoints as $point) {
           if (DEBUG) print "Point($point[x],$point[y])\n";
@@ -89,7 +90,7 @@ class Graph {
           $row->plotStyle->drawDataPoint($this->img,$mapped['x'],$mapped['y']);        
           if (!empty($point['label'])) {
             $x_offset = max(10, min($mapped['x']+5, $this->width - 3*strlen($point['label'])));
-            imagestring($this->img, 1, $x_offset, $mapped['y']+5, $point['label'], $this->labelcolor);
+            imagestring($this->img, 1, $x_offset, $mapped['y']+5, $point['label'], $labelcolor);
           }
         }      
       }  
