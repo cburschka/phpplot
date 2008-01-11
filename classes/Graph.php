@@ -88,7 +88,8 @@ class Graph {
           $mapped=$this->map_point($point['x'],$point['y']);
           if (DEBUG) print "Mapped to($mapped[x],$mapped[y])\n";
           if (DEBUG) print "!!!". $row->plotStyle->color. "!!!\n";
-          $row->plotStyle->drawDataPoint($this->img,$mapped['x'],$mapped['y']);        
+          $row->plotStyle->drawDataPoint($this->img,$mapped['x'],$mapped['y']);       
+          $labelcolor = $row->plotStyle->labelcolor ? $row->plotStyle->labelcolor : $this->labelcolor;
           if (!empty($point['label'])) {
             $x_offset = max(10, min($mapped['x']+5, $this->width - 3*strlen($point['label'])));
             imagestring($this->img, 1, $x_offset, $mapped['y']+5, $point['label'], $labelcolor);
