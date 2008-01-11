@@ -80,7 +80,8 @@ class Graph {
     if (DEBUG) print "draw_rows() called";
     if ($this->rows) {
       foreach ($this->rows as $row) {
-        $labelcolor = $row->labelcolor ? $row->labelcolor : $this->labelcolor;
+        // TODO: Outsource imagestring to plotStyle, like point drawing?
+        $labelcolor = $row->plotStyle->labelcolor ? $row->plotStyle->labelcolor : $this->labelcolor;
         if (DEBUG) print "NEW ROW!";
         foreach ($row->dataPoints as $point) {
           if (DEBUG) print "Point($point[x],$point[y])\n";
