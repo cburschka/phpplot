@@ -43,6 +43,8 @@ class DataRow {
 		if (empty($this->dimensions['x'])) {
 			$this->dimensions['x']['min']=$x;
 			$this->dimensions['y']['min']=$y;
+                        $this->dimensions['x']['max']=$x;
+                        $this->dimensions['y']['max']=$y;
 		}
 		$this->dimensions['x']['min']=min($x,$this->dimensions['x']['min']);
 		$this->dimensions['y']['min']=min($y,$this->dimensions['y']['min']);
