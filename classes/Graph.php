@@ -26,6 +26,7 @@ class Graph {
     $this->height=$height;
     $this->width=$width;
     $this->color=array();
+    $this->rows = array();
     $label_x='%.2f';
     $label_y='%.2f';
     if (preg_match('/^DATE::(.*)$/',$label_x,$match)) {
@@ -42,7 +43,7 @@ class Graph {
   // Optionally set the label of the axis. The X-axis can be formatted as a date, which will 
   // cause the x value to be interpreted as UNIX time.
 
-  function setLabel($x = NULL, $y = NULL)
+  function setLabel($x = NULL, $y = NULL, $x_name = NULL, $y_name = NULL)
   {
     if (!empty($x)) {
       if (preg_match('/^DATE::(.*)$/',$x,$match)) {
@@ -52,6 +53,12 @@ class Graph {
     }
     if (!empty($y)) {
       $this->label_y=$y;
+    }
+    if (!empty($x_name)) {
+      $this->x_name = $x_name;
+    }
+    if (!empty($y_name)) {
+      $this->y_name = $y_name;
     }
   }
 
@@ -306,6 +313,12 @@ class Graph {
     // bottom horizontal axis
     if (DEBUG) print "Drawing axis from [35, $x_axis] to [". ($this->width+40) .", $x_axis] in $this->labelcolor.\n";
     imageline($this->img,35,$x_axis,$this->width+40,$x_axis,$this->labelcolor);
+    if (!empty($this->x_name)) {
+      imagestring($this->img, 1, $this->width - 20, $x_axis - 10, $this->x_name, $this->labelcolor); 
+    }
+    if (!empty($this->y_name)) {
+      imagestring($this->img, 1, $y_axis + 10, 10, $this->y_name, $this->labelcolor); 
+    }
     for ($i=0;$i<=$this->x_notches;$i++) {
       // scales on the x axis
       $xer=40+ceil($i * $this->width / $this->x_notches);
