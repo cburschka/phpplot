@@ -16,6 +16,9 @@ class Graph {
   var $label_y;
   var $height;
   var $width;
+  var $notch_type;
+  var $x_notch_type;
+  var $y_notch_type;
   
   // Initialize the graph object.
 
