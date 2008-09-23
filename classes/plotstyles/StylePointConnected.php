@@ -9,7 +9,8 @@ class StylePointConnected extends PlotStyle {
 	private $linewidth;
 	private $radius;
 	private $vertices;
-	public $color;	
+	public $color;
+        public $labelcolor;
         
 	private $lastPoint;
 

@@ -19,6 +19,8 @@ class Graph {
   var $notch_type;
   var $x_notch_type;
   var $y_notch_type;
+  var $x_is_date;
+  var $y_is_date;
   
   // Initialize the graph object.
 
