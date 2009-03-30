@@ -6,7 +6,6 @@
  * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
 class StylePolyPoint extends PlotStyle {
-	
 	function StylePolyPoint($vertices,$radius,$color,$filled=true) {
 		$this->name="point";
 		$this->vertices=$vertices;
@@ -26,7 +25,7 @@ class StylePolyPoint extends PlotStyle {
 		if (DEBUG) var_dump($points);
 		if (DEBUG) var_dump($this->vertices);
 		imagefilledpolygon($image,$points,$this->vertices,$this->color[0]);
-		if ($this->color[1]) imagepolygon($image,$points,$this->vertices,$this->color[1]);
+		if (!empty($this->color[1])) imagepolygon($image,$points,$this->vertices,$this->color[1]);
 	}
 }
 ?>
