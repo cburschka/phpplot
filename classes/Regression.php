@@ -121,3 +121,12 @@ function matrix_invert($matrix) {
   return $matrix;
 }
 
+function polynomial_y($coefficients, $x) {
+  $d = 1;
+  $y = 0;
+  foreach ($coefficients as $c) {
+    $y += $c * $d;
+    $d *= $x;
+  }
+  return $y;
+}
