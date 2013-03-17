@@ -14,7 +14,7 @@ abstract class PlotStyle {
 		$this->color=$color;		
 	}
 	
-	function drawDataPoint() {
+	function drawDataPoint($image, $x, $y) {
 		if (DEBUG) "Accidentally called abstract function.\n";
  	}
 	
