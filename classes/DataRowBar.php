@@ -22,7 +22,7 @@ class DataRowBar extends DataRow {
 		$this->dimensions['x'] = array('min' => 0);
 	}
 
-	function addPoint($y, $label=NULL) {
+	function addPoint($x, $y, $label=NULL) {
 		if (DEBUG) print "Adding new point at [$y]\n";
 		$x = count($this->dataPoints) + 1;
 		$point=array('x'=>$x,'y'=>$y);
