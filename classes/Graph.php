@@ -93,7 +93,7 @@ class Graph {
     if ($this->rows) {
       foreach ($this->rows as $row) {
         // TODO: Outsource imagestring to plotStyle, like point drawing?
-        $labelcolor = $row->plotStyle->labelcolor ? $row->plotStyle->labelcolor : $this->labelcolor;
+        $labelcolor = !empty($row->plotStyle->labelcolor) ? $row->plotStyle->labelcolor : $this->labelcolor;
         if (DEBUG) print "NEW ROW!";
         foreach ($row->dataPoints as $point) {
           if (DEBUG) print "Point($point[x],$point[y])\n";
@@ -101,7 +101,7 @@ class Graph {
           if (DEBUG) print "Mapped to($mapped[x],$mapped[y])\n";
           if (DEBUG) print "!!!". $row->plotStyle->color. "!!!\n";
           $row->plotStyle->drawDataPoint($this->img,$mapped['x'],$mapped['y']);       
-          $labelcolor = $row->plotStyle->labelcolor ? $row->plotStyle->labelcolor : $this->labelcolor;
+          $labelcolor = !empty($row->plotStyle->labelcolor) ? $row->plotStyle->labelcolor : $this->labelcolor;
           if (!empty($point['label'])) {
             $x_offset = max(10, min($mapped['x']+5, $this->width - 3*strlen($point['label'])));
             imagestring($this->img, 1, $x_offset, $mapped['y']+5, $point['label'], $labelcolor);
@@ -278,7 +278,7 @@ class Graph {
 
   function set_ranges() {
     global $rehzero;
-    if ($this->forced) return; // do not set range automatically.
+    if (!empty($this->forced)) return; // do not set range automatically.
     if (DEBUG) print "Automatically setting scale range.\n";
     if (DEBUG) print "Taking arbitrary extreme values from first row: \n";
     $first_point=array('x'=>$this->rows[0]->dimensions['x']['min'],'y'=>$this->rows[0]->dimensions['y']['min']);
