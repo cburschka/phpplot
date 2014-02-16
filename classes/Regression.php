@@ -1,20 +1,18 @@
 <?php
-
 /*
  * type: 0 - vertical error, 1 - horizontal error, 2 - lode error
  */
-function linear_regression($points=array())
-{
+function linear_regression($points = array()) {
   $coefficients = array();
   foreach ($points as $point) {
     $c[1] += pow($point['x'], 2);
     $c[2] += $point['x'];
-    $c[3] += $point['x']*$point['y'];
+    $c[3] += $point['x'] * $point['y'];
     $c[4] += $point['y'];
   }
   $n = count($points);
-  $offset = ($c[3]-(2*$c[1]*$c[4]/$c[2])) / (2*$c2 - (2*$n*$c[1]/$c[2]));
-  $slope = ($c[3] - $c[2]*$offset ) / $c[1];
+  $offset = ($c[3] - (2 * $c[1] * $c[4] / $c[2])) / (2 * $c2 - (2 * $n * $c[1] / $c[2]));
+  $slope = ($c[3] - $c[2] * $offset) / $c[1];
   return array($offset, $slope);
 }
 
@@ -31,7 +29,7 @@ function polynomial_regression($points = array(), $degree) {
   $left = matrix_invert(matrix_multiply(matrix_transpose($mX), $mX));
   $right = matrix_multiply(matrix_transpose($mX), $mY);
   $coefficients = matrix_multiply($left, $right);
-  foreach ($coefficients as &$c) $c = $c[0];
+  foreach ($coefficients as & $c) $c = $c[0];
   return $coefficients;
 }
 
@@ -55,7 +53,9 @@ function matrix_transpose($matrix) {
  */
 function matrix_multiply($left, $right) {
   // Match left cleft to right height.
-  if (count($left[0]) != count($right)) return FALSE;
+  if (count($left[0]) != count($right)) {
+    return FALSE;
+  }
   for ($i = 0; $i < count($left); $i++) {
     $product[$i] = array();
     for ($j = 0; $j < count($right[0]); $j++) {
@@ -81,14 +81,14 @@ function matrix_invert($matrix) {
   for ($i = 0; $i < count($matrix); $i++) {
     for ($j = 0; $j < $i; $j++) $matrix[$i][] = 0;
     $matrix[$i][] = 1;
-    for ($j = $i+1; $j < count($matrix); $j++) $matrix[$i][] = 0;
+    for ($j = $i + 1; $j < count($matrix); $j++) $matrix[$i][] = 0;
   }
 
   // Reduce to echelon form.
   for ($i = 0; $i < count($matrix); $i++) {
     // If pivot is 0, switch rows.
     if ($matrix[$i][$i] == 0) {
-      for ($j = $i+1; $j < count($matrix); $j++) {
+      for ($j = $i + 1; $j < count($matrix); $j++) {
         if ($matrix[$j][$i] != 0) {
           $r = $matrix[$j];
           $matrix[$j] = $matrix[$i];
@@ -96,7 +96,10 @@ function matrix_invert($matrix) {
           break;
         }
       }
-      if ($matrix[$i][$i] == 0) return FALSE; // Singular.
+      // Singular.
+      if ($matrix[$i][$i] == 0) {
+        return FALSE;
+      }
     }
 
     // Normalize column to 1 in this row.
@@ -107,7 +110,9 @@ function matrix_invert($matrix) {
 
     // Reduce the rest of the column to 0.
     for ($j = 0; $j < count($matrix); $j++) {
-      if ($j == $i) continue;
+      if ($j == $i) {
+        continue;
+      }
       $factor = $matrix[$j][$i];
       for ($k = 0; $k < count($matrix[$j]); $k++) {
         $matrix[$j][$k] -= $factor * $matrix[$i][$k];
