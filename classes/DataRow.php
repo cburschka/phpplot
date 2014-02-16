@@ -15,7 +15,7 @@ class DataRow {
 	// which size is set, which is measured - 0 for y over x, 1 for x over y, 2 for INDEPENDENT SIZES
 	// which are evaluated in a SQUARE TOLERANCE
 	// 3 for a "dartboard" where points are evaluated on their combined DISTANCE from the mean in a RADIAL TOLERANCE.
-	public $dependent; 
+	public $dependent;
 	public $mean;
 	public $dev;
 	

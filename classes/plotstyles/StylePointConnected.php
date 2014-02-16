@@ -11,7 +11,7 @@ class StylePointConnected extends PlotStyle {
 	private $vertices;
 	public $color;
         public $labelcolor;
-        
+
 	private $lastPoint;
 
 	function StylePointConnected($vertices, $radius, $colorpoint, $colorline=NULL, $colorlabel=NULL, $width=1) {
@@ -22,7 +22,7 @@ class StylePointConnected extends PlotStyle {
 		$this->color[0]=$colorpoint;		
 		if (!empty($colorline)) $this->color[1] = $colorline;
                 else $this->color[1] = $this->color[0];
-                
+
                 if (!empty($colorlabel)) $this->color[2] = $colorlabel;
 		else $this->color[2] = $this->color[0];
 	}

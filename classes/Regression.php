@@ -15,7 +15,7 @@ function linear_regression($points=array())
   $n = count($points);
   $offset = ($c[3]-(2*$c[1]*$c[4]/$c[2])) / (2*$c2 - (2*$n*$c[1]/$c[2]));
   $slope = ($c[3] - $c[2]*$offset ) / $c[1];
-  return array($offset, $slope); 
+  return array($offset, $slope);
 }
 
 function polynomial_regression($points = array(), $degree) {
@@ -83,7 +83,7 @@ function matrix_invert($matrix) {
     $matrix[$i][] = 1;
     for ($j = $i+1; $j < count($matrix); $j++) $matrix[$i][] = 0;
   }
-  
+
   // Reduce to echelon form.
   for ($i = 0; $i < count($matrix); $i++) {
     // If pivot is 0, switch rows.
@@ -98,13 +98,13 @@ function matrix_invert($matrix) {
       }
       if ($matrix[$i][$i] == 0) return FALSE; // Singular.
     }
-    
+
     // Normalize column to 1 in this row.
     $pivot = $matrix[$i][$i];
     for ($j = 0; $j < count($matrix[$i]); $j++) {
       $matrix[$i][$j] /= $pivot;
     }
-    
+
     // Reduce the rest of the column to 0.
     for ($j = 0; $j < count($matrix); $j++) {
       if ($j == $i) continue;

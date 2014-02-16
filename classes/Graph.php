@@ -7,7 +7,7 @@
  */
 
 class Graph {
-  
+
   private $img;
   private $color;
   var $bgcolor;
@@ -21,7 +21,7 @@ class Graph {
   var $y_notch_type;
   var $x_is_date;
   var $y_is_date;
-  
+
   // Initialize the graph object.
 
   function Graph($width,$height,$bgcolor,$labelcolor) {
@@ -45,7 +45,7 @@ class Graph {
     $this->y_notches = 10;
   }
 
-  // Optionally set the label of the axis. The X-axis can be formatted as a date, which will 
+  // Optionally set the label of the axis. The X-axis can be formatted as a date, which will
   // cause the x value to be interpreted as UNIX time.
 
   function setLabel($x = NULL, $y = NULL, $x_name = NULL, $y_name = NULL)
@@ -76,18 +76,18 @@ class Graph {
     if (!empty($y)) {
        $this->y_notches = $y;
       $this->y_notch_type = $type; // by interval or by number of notches?
-    }    
+    }
   }
 
   function addDataRow($row=false) {
     // allocate colors to the plotstyle.
     //var_dump($row->plotStyle);
     foreach ($row->plotStyle->color as &$color) $color=$this->color($color);
-    if ($row) $this->rows[]=$row;    
+    if ($row) $this->rows[]=$row;
   }
-  
+
   // finalizes the image
-  
+
   function drawRows() {
     if (DEBUG) print "draw_rows() called";
     if ($this->rows) {
@@ -100,17 +100,17 @@ class Graph {
           $mapped=$this->map_point($point['x'],$point['y']);
           if (DEBUG) print "Mapped to($mapped[x],$mapped[y])\n";
           if (DEBUG) print "!!!". $row->plotStyle->color. "!!!\n";
-          $row->plotStyle->drawDataPoint($this->img,$mapped['x'],$mapped['y']);       
+          $row->plotStyle->drawDataPoint($this->img,$mapped['x'],$mapped['y']);
           $labelcolor = !empty($row->plotStyle->labelcolor) ? $row->plotStyle->labelcolor : $this->labelcolor;
           if (!empty($point['label'])) {
             $x_offset = max(10, min($mapped['x']+5, $this->width - 3*strlen($point['label'])));
             imagestring($this->img, 1, $x_offset, $mapped['y']+5, $point['label'], $labelcolor);
           }
-        }      
-      }  
+        }
+      }
     }
   }
-  
+
   function draw_image() {
     $this->set_ranges(); // finds minimum and maximum
     /* bars, lines and points. to keep it all visible. */
@@ -124,7 +124,7 @@ class Graph {
     imagepng($this->img);
     return ob_get_clean();
   }
-  
+
   function rgb_allocate($hex) {
     if (strlen($hex)!=6) return false;
     $hex_split=array(substr($hex,0,2),substr($hex,2,2),substr($hex,4,2));
@@ -152,7 +152,7 @@ class Graph {
       if ($x)  imageline($this->img, 35, $map['y'], $this->width+40, $map['y'], $row->plotStyle->color[0]);
       if ($y)  imageline($this->img, $map['x'], 10, $map['x'], $this->height + 15, $row->plotStyle->color[0]);
     }
-  }  
+  }
   function addDeviations() {
     foreach ($this->rows as &$row) {
       if (!$row->dev) continue;
@@ -186,24 +186,24 @@ class Graph {
         for ($i=1; $i<=$row->dev;$i++) {
           if ($x)  {
             imageline(
-	      $this->img, $i*$corner['x']-($i-1)*$center['x'], $i*$corner['y']-($i-1)*$center['y'], 
+	      $this->img, $i*$corner['x']-($i-1)*$center['x'], $i*$corner['y']-($i-1)*$center['y'],
 	      $i*$corner['x']-($i-1)*$center['x'], ($i+1)*$center['y']-$i*$corner['y'], $row->plotStyle->color[0]);
             imageline(
-	      $this->img, ($i+1)*$center['x']-$i*$corner['x'], $i*$corner['y']-($i-1)*$center['y'], 
+	      $this->img, ($i+1)*$center['x']-$i*$corner['x'], $i*$corner['y']-($i-1)*$center['y'],
 	      ($i+1)*$center['x']-$i*$corner['x'], ($i+1)*$center['y']-$i*$corner['y'], $row->plotStyle->color[0]);
           }
           if ($y) {
             imageline(
-	      $this->img, $i*$corner['x']-($i-1)*$center['x'], $i*$corner['y']-($i-1)*$center['y'], 
+	      $this->img, $i*$corner['x']-($i-1)*$center['x'], $i*$corner['y']-($i-1)*$center['y'],
 	      ($i+1)*$center['x']-$i*$corner['x'], $i*$corner['y']-($i-1)*$center['y'], $row->plotStyle->color);
-            imageline($this->img, $i*$corner['x']-($i-1)*$center['x'], ($i+1)*$center['y']-$i*$corner['y'], 
+            imageline($this->img, $i*$corner['x']-($i-1)*$center['x'], ($i+1)*$center['y']-$i*$corner['y'],
 	    ($i+1)*$center['x']-$i*$corner['x'], ($i+1)*$center['y']-$i*$corner['y'], $row->plotStyle->color);
-          }            
+          }
         }
       }
       //
     }
-    
+
   }
 
   function addRegressions()
@@ -217,10 +217,10 @@ class Graph {
         $start = array('x' => $this->min_x, 'y' => polynomial_y($row->regression, $this->min_x));
         for ($i = 0; $i < $resolution; $i++)
         {
-          $next = array('x' => $start['x']+$stepsize, 'y' => polynomial_y($row->regression, $start['x']+$stepsize));          
+          $next = array('x' => $start['x']+$stepsize, 'y' => polynomial_y($row->regression, $start['x']+$stepsize));
           $pstart = $this->map_point($start['x'], $start['y']);
           $pnext = $this->map_point($next['x'], $next['y']);
-          
+
           if (DEBUG) print "Drawing regression from [$p1[x], $p1[y]] to [$p2[x], $p2[y]]...\n";
           imageline($this->img, $pstart['x'], $pstart['y'], $pnext['x'], $pnext['y'], $row->plotStyle->color[0]);
           $start = $next;
@@ -234,7 +234,7 @@ class Graph {
     if (@$this->color[$hex]) return @$this->color[$hex];
     else return $this->rgb_allocate($hex);
   }
-  
+
   function get_unix_time($time) {
     if (preg_match('/^[0-9]+$/',$time,$match)) return $match[0];
     else if (preg_match('/[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}( [0-9]{2,2}:[0-9]{2,2})?/',$time,$match)) {
@@ -242,7 +242,7 @@ class Graph {
     }
     else return false;
   }
-  
+
   function send_header() {
     if (DEBUG) header("Content-type: text/html;charset=utf-8");
     else header("Content-type: image/png;charset=utf-8");
@@ -274,7 +274,7 @@ class Graph {
     }
     if ($this->x_notch_type == 'interval') $this->x_notches = $this->max_width / $this->x_notches;
     if ($this->y_notch_type == 'interval') $this->y_notches = $this->max_height / $this->y_notches;
-  }  
+  }
 
   function set_ranges() {
     global $rehzero;
@@ -287,7 +287,7 @@ class Graph {
     $this->max_x=$first_point['x'];
     $this->min_y=$first_point['y'];
     $this->max_y=$first_point['y'];
-    
+
     if ($this->rows)
     foreach ($this->rows as $row) {
       if (DEBUG) print "Comparing with next row: ";
@@ -296,7 +296,7 @@ class Graph {
       $this->min_y = min($this->min_y,$row->dimensions['y']['min']);
        $this->max_y = max($this->max_y,$row->dimensions['y']['max']);
       if (DEBUG) print "ranges are [$this->min_x, $this->min_y] to [$this->max_x, $this->max_y]\n ";
-    }    
+    }
     if (DEBUG) print "[$this->min_x:$this->max_x],[$this->min_y:$this->max_y]\n";
     $this->max_height=$this->max_y-$this->min_y;
     $this->max_width=$this->max_x-$this->min_x;
@@ -304,7 +304,7 @@ class Graph {
     if ($this->x_notch_type == 'interval') $this->x_notches = $this->max_width / $this->x_notches;
     if ($this->y_notch_type == 'interval') $this->y_notches = $this->max_height / $this->y_notches;
   }
-  
+
   function addScale() {
     global $rehzero;
     if (DEBUG) print "Drawing both axes.\n";
@@ -319,10 +319,10 @@ class Graph {
     if (DEBUG) print "Drawing axis from [35, $x_axis] to [". ($this->width+40) .", $x_axis] in $this->labelcolor.\n";
     imageline($this->img,35,$x_axis,$this->width+40,$x_axis,$this->labelcolor);
     if (!empty($this->x_name)) {
-      imagestring($this->img, 1, $this->width - 20, $x_axis - 10, $this->x_name, $this->labelcolor); 
+      imagestring($this->img, 1, $this->width - 20, $x_axis - 10, $this->x_name, $this->labelcolor);
     }
     if (!empty($this->y_name)) {
-      imagestring($this->img, 1, $y_axis + 10, 10, $this->y_name, $this->labelcolor); 
+      imagestring($this->img, 1, $y_axis + 10, 10, $this->y_name, $this->labelcolor);
     }
     for ($i=0;$i<=$this->x_notches;$i++) {
       // scales on the x axis
@@ -332,7 +332,7 @@ class Graph {
       if ($this->x_is_date) $label=date($this->label_x,$label);
       else if ($this->label_x) $label=sprintf($this->label_x,$label);
       imagestring($this->img,1,$xer-5,$x_axis+10,$label,$this->labelcolor);
-    }    
+    }
 
     for ($i=0;$i<=$this->y_notches;$i++) {
       // scales on the y axis
@@ -341,10 +341,10 @@ class Graph {
       $label=$this->max_y-($i/$this->y_notches*$this->max_height);
       if ($this->label_y) $label=sprintf($this->label_y,$label);
       imagestring($this->img,1,$y_axis-38,$yer+2,$label,$this->labelcolor);
-    }    
+    }
   }
-  
-  function addLegend() 
+
+  function addLegend()
   {
     foreach ($this->rows as $i=>$row)
     {

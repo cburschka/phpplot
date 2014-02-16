@@ -60,7 +60,7 @@ class StyleBar extends PlotStyle {
 		$color = $this->color[$negative?1:0];
 		if (DEBUG) print "Drawing rectangle on $image from [$x1, $y1] to [$x2, $y2] in $color.\n";
 		imagefilledrectangle($image,$x1,$y1,$x2,$y2,$color);
-		if (isset($this->color[2])) 
+		if (isset($this->color[2]))
 		imagerectangle($image,$x1,$y1,$x2,$y2,$this->color[2]);
 		
 	}
