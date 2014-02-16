@@ -186,18 +186,18 @@ class Graph {
         for ($i=1; $i<=$row->dev;$i++) {
           if ($x)  {
             imageline(
-	      $this->img, $i*$corner['x']-($i-1)*$center['x'], $i*$corner['y']-($i-1)*$center['y'],
-	      $i*$corner['x']-($i-1)*$center['x'], ($i+1)*$center['y']-$i*$corner['y'], $row->plotStyle->color[0]);
+        $this->img, $i*$corner['x']-($i-1)*$center['x'], $i*$corner['y']-($i-1)*$center['y'],
+        $i*$corner['x']-($i-1)*$center['x'], ($i+1)*$center['y']-$i*$corner['y'], $row->plotStyle->color[0]);
             imageline(
-	      $this->img, ($i+1)*$center['x']-$i*$corner['x'], $i*$corner['y']-($i-1)*$center['y'],
-	      ($i+1)*$center['x']-$i*$corner['x'], ($i+1)*$center['y']-$i*$corner['y'], $row->plotStyle->color[0]);
+        $this->img, ($i+1)*$center['x']-$i*$corner['x'], $i*$corner['y']-($i-1)*$center['y'],
+        ($i+1)*$center['x']-$i*$corner['x'], ($i+1)*$center['y']-$i*$corner['y'], $row->plotStyle->color[0]);
           }
           if ($y) {
             imageline(
-	      $this->img, $i*$corner['x']-($i-1)*$center['x'], $i*$corner['y']-($i-1)*$center['y'],
-	      ($i+1)*$center['x']-$i*$corner['x'], $i*$corner['y']-($i-1)*$center['y'], $row->plotStyle->color);
+        $this->img, $i*$corner['x']-($i-1)*$center['x'], $i*$corner['y']-($i-1)*$center['y'],
+        ($i+1)*$center['x']-$i*$corner['x'], $i*$corner['y']-($i-1)*$center['y'], $row->plotStyle->color);
             imageline($this->img, $i*$corner['x']-($i-1)*$center['x'], ($i+1)*$center['y']-$i*$corner['y'],
-	    ($i+1)*$center['x']-$i*$corner['x'], ($i+1)*$center['y']-$i*$corner['y'], $row->plotStyle->color);
+      ($i+1)*$center['x']-$i*$corner['x'], ($i+1)*$center['y']-$i*$corner['y'], $row->plotStyle->color);
           }
         }
       }
