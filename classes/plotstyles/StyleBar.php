@@ -66,6 +66,3 @@ class StyleBar extends PlotStyle {
   }
 
 }
-
-
-?>

@@ -28,4 +28,3 @@ class StylePolyPoint extends PlotStyle {
     if (!empty($this->color[1])) imagepolygon($image,$points,$this->vertices,$this->color[1]);
   }
 }
-?>

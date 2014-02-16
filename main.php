@@ -6,5 +6,3 @@
   require_once("classes/DataRowBar.php");
   require_once("classes/Regression.php");
   require_once("classes/plotstyles/all.php");
-
-?>

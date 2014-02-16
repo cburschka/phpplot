@@ -42,4 +42,3 @@ class StylePointConnected extends PlotStyle {
     $this->lastPoint=array('x'=>$x, 'y'=>$y);
   }
 }
-?>

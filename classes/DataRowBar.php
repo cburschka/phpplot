@@ -35,4 +35,3 @@ class DataRowBar extends DataRow {
     if (DEBUG) var_dump($this->dimensions);
   }
 }
-?>

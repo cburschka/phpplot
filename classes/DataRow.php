@@ -54,4 +54,3 @@ class DataRow {
     if (DEBUG) var_dump($this->dimensions);
   }
 }
-?>

@@ -25,4 +25,3 @@ class StyleLine extends PlotStyle {
     $this->lastPoint=array('x'=>$x, 'y'=>$y);
   }
 }
-?>
