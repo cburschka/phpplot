@@ -1,10 +1,5 @@
 <?php
-/*
- * Created on 02.12.2006
- *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
- */
+
 class StylePolyPoint extends PlotStyle {
   function StylePolyPoint($vertices, $radius, $color, $filled = TRUE) {
     $this->name = "point";

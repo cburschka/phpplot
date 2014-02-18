@@ -1,10 +1,5 @@
 <?php
-/*
- * Created on 02.12.2006
- *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
- */
+
 function polygon_points($center, $vertices, $radius) {
   if (DEBUG) {
     print "Calculating $vertices points around [$center[x], $center[y]].\n";

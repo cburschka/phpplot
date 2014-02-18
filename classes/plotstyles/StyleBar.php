@@ -1,5 +1,7 @@
 <?php
+
 define('BAR_VERTICAL', TRUE); define('BAR_HORIZONTAL', FALSE);
+
 class StyleBar extends PlotStyle {
   private $vertical;
   private $radius;

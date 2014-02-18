@@ -1,4 +1,5 @@
 <?php
+
 /*
  * type: 0 - vertical error, 1 - horizontal error, 2 - lode error
  */
