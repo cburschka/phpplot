@@ -10,7 +10,7 @@ abstract class PlotStyle {
 
   function drawDataPoint($image, $x, $y) {
     if (DEBUG) {
-      "Accidentally called abstract function.\n";
+      print("Accidentally called abstract function.\n");
     }
   }
 }
