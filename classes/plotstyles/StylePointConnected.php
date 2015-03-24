@@ -29,7 +29,7 @@ class StylePointConnected extends PlotStyle {
   }
 
   function drawDataPoint($image, $x, $y) {
-    $this->labelcolor = $this->color[2];
+    $this->alabelcolor = $this->acolor[2];
     if (DEBUG) {
       print "Drawing data point for $image at [$x, $y].\n";
     }
@@ -41,12 +41,12 @@ class StylePointConnected extends PlotStyle {
     if (DEBUG) {
       var_dump($this->vertices);
     }
-    imagefilledpolygon($image, $points, $this->vertices, $this->color[0]);
+    imagefilledpolygon($image, $points, $this->vertices, $this->acolor[0]);
     if ($this->lastPoint) {
       if (DEBUG) {
         print "Drawing data line for $image at [$x, $y].\n";
       }
-      imageline($image, $this->lastPoint['x'], $this->lastPoint['y'], $x, $y, $this->color[1]);
+      imageline($image, $this->lastPoint['x'], $this->lastPoint['y'], $x, $y, $this->acolor[1]);
     }
     $this->lastPoint = array('x' => $x, 'y' => $y);
   }

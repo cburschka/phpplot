@@ -14,6 +14,7 @@ class DataRow {
   public $dev;
 
   function DataRow($name, $plotStyle, $dependent = 0, $mean = FALSE, $dev = 0) {
+    if (DEBUG) print("Creating new row [$name]<br />");
     $this->plotStyle = $plotStyle;
     $this->name = $name;
     $this->dataPoints = array();

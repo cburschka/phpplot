@@ -19,7 +19,7 @@ class StylePolyPoint extends PlotStyle {
 
   function drawDataPoint($image, $x, $y) {
     if (DEBUG) {
-      print "Drawing data point for $image at [$x, $y] in $color.\n";
+      print "Drawing data point for $image at [$x, $y] in ". $this->color[0]."\n";
     }
     $points = polygon_points(array('x' => $x, 'y' => $y), $this->vertices, $this->radius);
     //var_dump(count($points));
@@ -29,9 +29,9 @@ class StylePolyPoint extends PlotStyle {
     if (DEBUG) {
       var_dump($this->vertices);
     }
-    imagefilledpolygon($image, $points, $this->vertices, $this->color[0]);
+    imagefilledpolygon($image, $points, $this->vertices, $this->acolor[0]);
     if (!empty($this->color[1])) {
-      imagepolygon($image, $points, $this->vertices, $this->color[1]);
+      imagepolygon($image, $points, $this->vertices, $this->acolor[1]);
     }
   }
 }

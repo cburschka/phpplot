@@ -6,6 +6,7 @@ abstract class PlotStyle {
 
   function PlotStyle($color) {
     $this->color = $color;
+    $this->acolor = $color;
   }
 
   function drawDataPoint($image, $x, $y) {

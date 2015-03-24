@@ -7,3 +7,4 @@ require_once 'classes/DataRow.php';
 require_once 'classes/DataRowBar.php';
 require_once 'classes/Regression.php';
 require_once 'classes/plotstyles/all.php';
+require_once 'lib/ellipse.php';

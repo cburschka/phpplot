@@ -16,13 +16,12 @@ class Graph {
   var $x_is_date;
   var $y_is_date;
 
-  // Initialize the graph object. function Graph($width, $height, $bgcolor, $labelcolor) {
+  // Initialize the graph object.
+  function Graph($width, $height, $bgcolor, $labelcolor) {
     if (!defined('DEBUG')) {
       define('DEBUG', @$_GET['debug']);
     }
-    if (DEBUG) print "Creating new blank image with dimensions " . ($width + 55) . "x" . ($height + 35) {
-      . ".\n";
-    }
+    if (DEBUG) print "Creating new blank image with dimensions " . ($width + 55) . "x" . ($height + 35) . ".\n";
     // margin
     $this->img = imagecreate($width + 55, $height + 35);
     $this->height = $height;
@@ -81,7 +80,8 @@ class Graph {
   function addDataRow($row = FALSE) {
     // allocate colors to the plotstyle.
     //var_dump($row->plotStyle);
-    foreach ($row->plotStyle->color as & $color) $color = $this->color($color);
+    if(DEBUG) print("Adding row " . $row->name . "<br />");
+    foreach ($row->plotStyle->color as $i=>$color) $row->plotStyle->acolor[$i] = $this->color($color);
     if ($row) {
       $this->rows[] = $row;
     }
@@ -89,15 +89,14 @@ class Graph {
 
   // finalizes the image
   function drawRows() {
-    if (DEBUG) print "draw_rows() {
-      called";
-    }
+    if (DEBUG) print "<hr />draw_rows() called";
     if ($this->rows) {
+      if (DEBUG) print("Drawing " . count($this->rows) . " rows <br />");
       foreach ($this->rows as $row) {
         // TODO: Outsource imagestring to plotStyle, like point drawing?
-        $labelcolor = !empty($row->plotStyle->labelcolor) ? $row->plotStyle->labelcolor : $this->labelcolor;
+        $labelcolor = !empty($row->plotStyle->alabelcolor) ? $row->plotStyle->alabelcolor : $this->labelcolor;
         if (DEBUG) {
-          print "NEW ROW!";
+          print "NEW ROW! " . $row->name . "<br />";
         }
         foreach ($row->dataPoints as $point) {
           if (DEBUG) {
@@ -108,10 +107,10 @@ class Graph {
             print "Mapped to($mapped[x],$mapped[y])\n";
           }
           if (DEBUG) {
-            print "!!!" . $row->plotStyle->color . "!!!\n";
+            print "!!!" . print_r($row->plotStyle->acolor) . "!!!<hr />";
           }
           $row->plotStyle->drawDataPoint($this->img, $mapped['x'], $mapped['y']);
-          $labelcolor = !empty($row->plotStyle->labelcolor) ? $row->plotStyle->labelcolor : $this->labelcolor;
+          $labelcolor = !empty($row->plotStyle->alabelcolor) ? $row->plotStyle->alabelcolor : $this->labelcolor;
           if (!empty($point['label'])) {
             $x_offset = max(10, min($mapped['x'] + 5, $this->width - 3 * strlen($point['label'])));
             imagestring($this->img, 1, $x_offset, $mapped['y'] + 5, $point['label'], $labelcolor);
@@ -166,14 +165,12 @@ class Graph {
       $row->x_mean = $x_sum / count($row->dataPoints);
       $row->y_mean = $y_sum / count($row->dataPoints);
       $map = $this->map_point($row->x_mean, $row->y_mean);
-      if (DEBUG) print "Drawing mean line from [35, $map[y]] to [" . ($this->width + 40) {
-        . ", $map[y]]\n";
-      }
+      if (DEBUG) print "Drawing mean line from [35, $map[y]] to [" . ($this->width + 40) . ", $map[y]]\n";
       if ($x) {
-        imageline($this->img, 35, $map['y'], $this->width + 40, $map['y'], $row->plotStyle->color[0]);
+        imageline($this->img, 35, $map['y'], $this->width + 40, $map['y'], $row->plotStyle->acolor[0]);
       }
       if ($y) {
-        imageline($this->img, $map['x'], 10, $map['x'], $this->height + 15, $row->plotStyle->color[0]);
+        imageline($this->img, $map['x'], 10, $map['x'], $this->height + 15, $row->plotStyle->acolor[0]);
       }
     }
   }
@@ -188,53 +185,85 @@ class Graph {
       // only draw vertical mean if x is a measured value.
       $x = $row->dependent != 0;
       $ellipsis = $row->dependent == 3;
-      $x_sum = 0;
-      $y_sum = 0;
       //var_dump($row->y_mean);
-      foreach ($row->dataPoints as $point) {
-        $x_sum += pow(($point['x'] - $row->x_mean), 2);
-        if (DEBUG) print ($point['y'] - $row->y_mean) {
-          . "\n\n";
-        }
-        $y_sum += pow(($point['y'] - $row->y_mean), 2);
-      }
-      $row->x_dev = sqrt($x_sum / (count($row->dataPoints) - 1));
-      $row->y_dev = sqrt($y_sum / (count($row->dataPoints) - 1));
-      if (DEBUG) {
-        print "Calculated deviations to $row->x_dev, $row->y_dev.\n";
-      }
       $center = $this->map_point($row->x_mean, $row->y_mean);
-      $corner = $this->map_point($row->x_mean + $row->x_dev, $row->y_mean + $row->y_dev);
+
       if ($ellipsis) {
-        $width = ($corner['x'] - $center['x']) * 2;
-        $height = ($corner['y'] - $center['y']) * 2;
+        $xx_sum = 0;
+        $xy_sum = 0;
+        $n = count($row->dataPoints);
+        foreach ($row->dataPoints as $point) {
+          $xx_sum += $point['x'] * $point['x'];
+          $xy_sum += $point['x'] * $point['y'];
+        }
+        $b = ($xy_sum - $row->x_mean * $row->y_mean * $n) / ($xx_sum - $row->x_mean * $row->x_mean * $n);
+        $a = $row->y_mean - $b * $row->x_mean;
+        $angle = rad2deg(atan($b));
+        if (DEBUG) print("<hr />Calculated regression as a = $a, b = $b, th = $angle <hr />");
+
+        $vec = [1 / sqrt(1 + $b*$b), $b / sqrt(1 + $b*$b)];
+        if (DEBUG) print("<hr />Calculated regression vector as " . print_r($vec, TRUE) . "<hr />");
+
+        $dotsum = 0;
+        $antisum = 0;
+
+        foreach ($row->dataPoints as $point) {
+          $diff = [$point['x'] - $row->x_mean, $point['y'] - $row->y_mean];
+          $dot = $vec[0] * $diff[0] + $vec[1] * $diff[1];
+          $dotsum += abs($dot);
+          $antidot = [$diff[0] - $vec[0] * $dot, $diff[1] - $vec[1] * $dot];
+          if (DEBUG) print("Antidot: " . print_r($antidot, TRUE) . "<br />");
+          $antisum += sqrt($antidot[0] * $antidot[0] + $antidot[1] * $antidot[1]);
+        }
+
+        if (DEBUG) print("<hr />Calculated sums as $dotsum x $antisum<hr />");
+
+        $devx = sqrt($dotsum / ($n - 1 ));
+        $devy = sqrt($antisum / ($n - 1 ));
+        $corner = $this->map_point($row->x_mean + $devx, $row->y_mean + $devy);
+        $width = ($corner['x']-$center['x'])*2;
+        $height = ($corner['y']-$center['y'])*2;
+
         if (DEBUG) {
           print "Drawing dev ellipse around [$center[x], $center[y]] by $width x $height\n";
         }
         for ($i = 1; $i <= $row->dev; $i++) {
-          imageellipse($this->img, $center['x'], $center['y'], $width * $i, $height * $i, $row->plotStyle->color[0]);
-          imagestring($this->img, 1, $center['x'] + ($width * $i / 2), $center['y'], "$i sigma", $row->plotStyle->color[0]);
+          if (DEBUG) print_r($row->plotStyle->acolor);
+          rotatedellipse($this->img, $center['x'], $center['y'], $width * $i, $height * $i, -$angle, $row->plotStyle->acolor[0]);
+          imagestring($this->img, 1, $center['x'] + ($width * $i / 2), $center['y'], "$i sigma", $row->plotStyle->acolor[0]);
         }
       }
       else {
+        foreach ($row->dataPoints as $point) {
+          $x_sum += pow(($point['x'] - $row->x_mean), 2);
+          if (DEBUG) print ($point['y'] - $row->y_mean) . "\n\n";
+          $y_sum += pow(($point['y'] - $row->y_mean), 2);
+        }
+        $row->x_dev = sqrt($x_sum / (count($row->dataPoints) - 1));
+        $row->y_dev = sqrt($y_sum / (count($row->dataPoints) - 1));
+        if (DEBUG) {
+          print "Calculated deviations to $row->x_dev, $row->y_dev.\n";
+        }
+
+        $corner = $this->map_point($row->x_mean + $row->x_dev, $row->y_mean + $row->y_dev);
         for ($i = 1; $i <= $row->dev; $i++) {
           if ($x) {
             imageline(
               $this->img, $i * $corner['x'] - ($i - 1) * $center['x'], $i * $corner['y'] - ($i - 1) * $center['y'],
-              $i * $corner['x'] - ($i - 1) * $center['x'], ($i + 1) * $center['y'] - $i * $corner['y'], $row->plotStyle->color[0]
+              $i * $corner['x'] - ($i - 1) * $center['x'], ($i + 1) * $center['y'] - $i * $corner['y'], $row->plotStyle->acolor[0]
             );
             imageline(
               $this->img, ($i + 1) * $center['x'] - $i * $corner['x'], $i * $corner['y'] - ($i - 1) * $center['y'],
-              ($i + 1) * $center['x'] - $i * $corner['x'], ($i + 1) * $center['y'] - $i * $corner['y'], $row->plotStyle->color[0]
+              ($i + 1) * $center['x'] - $i * $corner['x'], ($i + 1) * $center['y'] - $i * $corner['y'], $row->plotStyle->acolor[0]
             );
           }
           if ($y) {
             imageline(
               $this->img, $i * $corner['x'] - ($i - 1) * $center['x'], $i * $corner['y'] - ($i - 1) * $center['y'],
-              ($i + 1) * $center['x'] - $i * $corner['x'], $i * $corner['y'] - ($i - 1) * $center['y'], $row->plotStyle->color
+              ($i + 1) * $center['x'] - $i * $corner['x'], $i * $corner['y'] - ($i - 1) * $center['y'], $row->plotStyle->acolor
             );
             imageline($this->img, $i * $corner['x'] - ($i - 1) * $center['x'], ($i + 1) * $center['y'] - $i * $corner['y'],
-              ($i + 1) * $center['x'] - $i * $corner['x'], ($i + 1) * $center['y'] - $i * $corner['y'], $row->plotStyle->color
+              ($i + 1) * $center['x'] - $i * $corner['x'], ($i + 1) * $center['y'] - $i * $corner['y'], $row->plotStyle->acolor
             );
           }
         }
@@ -244,8 +273,9 @@ class Graph {
   }
 
   function addRegressions() {
-    $resolution = $this->width / 20;
+    $resolution = $this->width / 10;
     $stepsize = ($this->max_x - $this->min_x) / $resolution;
+
     foreach ($this->rows as $row) {
       if (!empty($row->regression)) {
         $start = array('x' => $this->min_x, 'y' => polynomial_y($row->regression, $this->min_x));
@@ -254,12 +284,7 @@ class Graph {
           $pstart = $this->map_point($start['x'], $start['y']);
           $pnext = $this->map_point($next['x'], $next['y']);
 
-          if (DEBUG) {
-
-            print "Drawing regression from [$p1[x], $p1[y]] to [$p2[x], $p2[y]]...\n";
-
-          }
-          imageline($this->img, $pstart['x'], $pstart['y'], $pnext['x'], $pnext['y'], $row->plotStyle->color[0]);
+          imageline($this->img, $pstart['x'], $pstart['y'], $pnext['x'], $pnext['y'], $row->plotStyle->acolor[0]);
           $start = $next;
         }
       }
@@ -270,8 +295,8 @@ class Graph {
     if (strlen($hex) == 3) {
       $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
     }
-    if (@$this->color[$hex]) {
-      return @$this->color[$hex];
+    if (@$this->acolor[$hex]) {
+      return @$this->acolor[$hex];
     }
     else return $this->rgb_allocate($hex);
   }
@@ -299,9 +324,7 @@ class Graph {
     }
     if (!$this->max_height)exit("HEIGHT_IS_ZERO");
     if (!$this->max_width)exit("WIDTH_IS_ZERO");
-    if (DEBUG) print ($this->max_y - $y) {
-      / $this->max_height * $this->height;
-    }
+    if (DEBUG) print ($this->max_y - $y) / $this->max_height * $this->height;
     $x_mapped = ceil(($x - $this->min_x) / $this->max_width * $this->width + 40);
     $y_mapped = ceil(($this->max_y - $y) / $this->max_height * $this->height) + 10;
     return array('x' => $x_mapped, 'y' => $y_mapped);
@@ -385,17 +408,13 @@ class Graph {
     if (DEBUG) {
       print "Zero is at [$rehzero[x], $rehzero[y]]\n";
     }
-    //$this->rows[0]->plotStyle->drawDataPoint($this->img, $rehzero['x'], $rehzero['y'], $this->rows[0]->plotStyle->color);
+    //$this->rows[0]->plotStyle->drawDataPoint($this->img, $rehzero['x'], $rehzero['y'], $this->rows[0]->plotStyle->acolor);
     $y_axis = min(max($rehzero['x'], 50), $this->width + 40);
     $x_axis = min(max($rehzero['y'], 10), $this->height + 15);
-    if (DEBUG) print "Drawing axis from [$y_axis, 10] to [$y_axis, " . ($this->height + 15) {
-      . "] in $this->labelcolor.\n";
-    }
+    if (DEBUG) print "Drawing axis from [$y_axis, 10] to [$y_axis, " . ($this->height + 15) . "] in $this->labelcolor.\n";
     imageline($this->img, $y_axis, 10, $y_axis, $this->height + 15, $this->labelcolor);
     // bottom horizontal axis
-    if (DEBUG) print "Drawing axis from [35, $x_axis] to [" . ($this->width + 40) {
-      . ", $x_axis] in $this->labelcolor.\n";
-    }
+    if (DEBUG) print "Drawing axis from [35, $x_axis] to [" . ($this->width + 40) . ", $x_axis] in $this->labelcolor.\n";
     imageline($this->img, 35, $x_axis, $this->width + 40, $x_axis, $this->labelcolor);
     if (!empty($this->x_name)) {
       imagestring($this->img, 1, $this->width - 20, $x_axis - 10, $this->x_name, $this->labelcolor);
@@ -431,10 +450,8 @@ class Graph {
 
   function addLegend() {
     foreach ($this->rows as $i => $row) {
-      if (DEBUG) print "Writing '$row->name' at [40, " . (20 + 10 * $i) {
-        . "] in " . $row->plotStyle->color[0] . ".\n";
-      }
-      imagestring($this->img, 2, 40, 20 + 10 * $i, $row->name, $row->plotStyle->color[0]);
+      if (DEBUG) print "Writing '$row->name' at [40, " . (20 + 10 * $i) . "] in " . $row->plotStyle->acolor[0] . ".\n";
+      imagestring($this->img, 2, 40, 20 + 10 * $i, $row->name, $row->plotStyle->acolor[0]);
     }
   }
 }
